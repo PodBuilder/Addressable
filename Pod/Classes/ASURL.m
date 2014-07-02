@@ -86,7 +86,7 @@ NSString * const ASURLComponentUserInfo = @"userinfo";
     return dict;
 }
 
-#pragma mark Creating ASURL Instances
+#pragma mark Constructors
 
 + (ASURL *)URLWithCocoaURL:(NSURL *)cocoaURL {
     return [self URLWithString:cocoaURL.absoluteString];
@@ -258,6 +258,8 @@ NSString * const ASURLComponentUserInfo = @"userinfo";
     
     return self;
 }
+
+#pragma mark Validation
 
 - (void)validate {
     NSLog(@"-[%@ %@] is unimplemented", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
