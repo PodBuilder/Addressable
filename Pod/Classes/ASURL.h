@@ -35,6 +35,7 @@ extern NSString * const ASURLComponentUserInfo; // username:password
 
 + (ASURL *)URLWithCocoaURL:(NSURL *)cocoaURL;
 + (ASURL *)URLWithString:(NSString *)URLString;
++ (ASURL *)URLWithParsedStringUsingHeuristics:(NSString *)URLString;
 - (id)initWithComponents:(NSDictionary *)components;
 
 #pragma mark Properties

@@ -23,6 +23,23 @@ static NSString *ASGetRegularExpressionCaptureGroupString(NSString *whole, NSRan
     else return [whole substringWithRange:groupRange];
 }
 
+static BOOL ASRegularExpressionMatches(NSString *str, NSString *pattern) {
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&error];
+    if (regex == nil) [NSException raise:NSInternalInconsistencyException format:@"Cannot compile regex '%@': %@", pattern, error];
+    
+    NSTextCheckingResult *match = [regex firstMatchInString:str options:0 range:NSMakeRange(0, str.length)];
+    return match != nil;
+}
+
+static NSString *ASRegularExpressionReplace(NSString *str, NSString *pattern, NSString *replacement) {
+    NSError *error;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:0 error:&error];
+    if (regex == nil) [NSException raise:NSInternalInconsistencyException format:@"Cannot compile regex '%@': %@", pattern, error];
+    
+    return [regex stringByReplacingMatchesInString:str options:0 range:NSMakeRange(0, str.length) withTemplate:replacement];
+}
+
 #pragma mark -
 
 NSString * const ASInvalidURLException = @"ASInvalidURLException";
@@ -127,6 +144,46 @@ NSString * const ASURLComponentUserInfo = @"userinfo";
                                                ASURLComponentPassword: path,
                                                ASURLComponentQuery: query,
                                                ASURLComponentFragment: fragment }];
+}
+
++ (ASURL *)URLWithParsedStringUsingHeuristics:(NSString *)URLString {
+    if (URLString == nil) return nil;
+    
+    NSString *realURL = URLString;
+    if (ASRegularExpressionMatches(realURL, @"^http:\\/+")) {
+        realURL = ASRegularExpressionReplace(realURL, @"^http:\\/+", @"http://");
+    } else if (ASRegularExpressionMatches(realURL, @"^https:\\/+")) {
+        realURL = ASRegularExpressionReplace(realURL, @"^https:\\/+", @"https://");
+    } else if (ASRegularExpressionMatches(realURL, @"feed:\\/+http:\\/+")) {
+        realURL = ASRegularExpressionReplace(realURL, @"feed:\\/+http:\\/+", @"feed:http://");
+    } else if (ASRegularExpressionMatches(realURL, @"feed:\\/+")) {
+        realURL = ASRegularExpressionReplace(realURL, @"feed:\\/+", @"feed://");
+    } else if (ASRegularExpressionMatches(realURL, @"file:\\/+")) {
+        realURL = ASRegularExpressionReplace(realURL, @"file:\\/+", @"file:///");
+    } else if (ASRegularExpressionMatches(realURL, @"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}")) {
+        realURL = ASRegularExpressionReplace(realURL, @"^", @"http://");
+    }
+    
+    ASURL *parsedURL = [self URLWithString:realURL];
+    if (ASRegularExpressionMatches(parsedURL.scheme, @"^[^\\/?#\\.]+\\.[^\\/?#]+$")) {
+        parsedURL = [self URLWithString:[NSString stringWithFormat:@"http://%@", realURL]];
+    }
+    
+    if ([parsedURL.path rangeOfString:@"."].length != 0) {
+        NSString *newHost = ASRegularExpressionReplace(parsedURL.path, @"^([^\\/]+\\.[^\\/]*)", @"$1");
+        if (newHost != nil && newHost.length != 0) {
+            [parsedURL executeBlockDeferringValidation:^{
+                NSString *escaped = [NSRegularExpression escapedPatternForString:newHost];
+                NSString *newPath = ASRegularExpressionReplace(parsedURL.path, [NSString stringWithFormat:@"^%@", escaped], @"");
+                parsedURL.hostName = newHost;
+                parsedURL.path = newPath;
+                
+                if (parsedURL.scheme == nil) parsedURL.scheme = @"http";
+            }];
+        }
+    }
+    
+    return parsedURL;
 }
 
 - (id)initWithComponents:(NSDictionary *)components {
