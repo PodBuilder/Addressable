@@ -53,6 +53,12 @@ extern NSString * const ASURLComponentUserInfo; // username:password
 @property (strong) NSString *queryValues;
 @property (strong) NSString *fragment;
 
+#pragma mark Joining
+
++ (ASURL *)combinedURLWithComponentURLs:(NSArray *)URLArray;
+- (ASURL *)URLByAppendingURL:(ASURL *)other;
+- (void)appendURL:(ASURL *)other;
+
 #pragma mark Validation
 
 - (void)validate;

@@ -259,6 +259,30 @@ NSString * const ASURLComponentUserInfo = @"userinfo";
     return self;
 }
 
+#pragma mark Joining
+
++ (ASURL *)combinedURLWithComponentURLs:(NSArray *)URLArray {
+    NSMutableArray *fixedArray = [URLArray mutableCopy];
+    ASURL *result = fixedArray[0];
+    [fixedArray removeObjectAtIndex:0];
+    
+    NSInteger limit = fixedArray.count;
+    for (NSInteger i = 0; i < limit; i++) {
+        [result appendURL:fixedArray[i]];
+    }
+    
+    return result;
+}
+
+- (ASURL *)URLByAppendingURL:(ASURL *)other {
+    [NSException raise:NSInternalInconsistencyException format:@"Unimplemented"];
+    return nil;
+}
+
+- (void)appendURL:(ASURL *)other {
+    [NSException raise:NSInternalInconsistencyException format:@"Unimplemented"];
+}
+
 #pragma mark Validation
 
 - (void)validate {
