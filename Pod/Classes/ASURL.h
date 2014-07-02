@@ -18,6 +18,42 @@
 
 extern NSString * const ASInvalidURLException;
 
+// These are keys for the components dictionary passed to -[ASURL initWithComponents:].
+extern NSString * const ASURLComponentScheme;
+extern NSString * const ASURLComponentUserName;
+extern NSString * const ASURLComponentPassword;
+extern NSString * const ASURLComponentHostName;
+extern NSString * const ASURLComponentPortNumber;
+extern NSString * const ASURLComponentPath;
+extern NSString * const ASURLComponentQuery;
+extern NSString * const ASURLComponentQueryValues;
+extern NSString * const ASURLComponentFragment;
+extern NSString * const ASURLComponentAuthority; // username:password@host.name:port
+extern NSString * const ASURLComponentUserInfo; // username:password
+
 @interface ASURL : NSObject
+
++ (ASURL *)URLWithCocoaURL:(NSURL *)cocoaURL;
++ (ASURL *)URLWithString:(NSString *)URLString;
+- (id)initWithComponents:(NSDictionary *)components;
+
+#pragma mark Properties
+
+@property (strong) NSString *scheme;
+@property (strong) NSString *userName;
+@property (strong) NSString *password;
+@property (strong) NSString *userInfo;
+@property (strong) NSString *hostName;
+@property (strong) NSString *portNumber;
+@property (strong) NSString *authority;
+@property (strong) NSString *path;
+@property (strong) NSString *query;
+@property (strong) NSString *queryValues;
+@property (strong) NSString *fragment;
+
+#pragma mark Validation
+
+- (void)validate;
+- (void)executeBlockDeferringValidation:(void (^)(void))block;
 
 @end
