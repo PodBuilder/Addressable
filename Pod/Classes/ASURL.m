@@ -186,6 +186,41 @@ NSString * const ASURLComponentUserInfo = @"userinfo";
     return parsedURL;
 }
 
++ (ASURL *)URLWithConvertedFilePath:(NSString *)path {
+    if (path == nil) return nil;
+    
+    NSString *strippedPath = [path stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (ASRegularExpressionMatches(strippedPath, @"^file:\\/?\\/?")) strippedPath = ASRegularExpressionReplace(strippedPath, @"^file:\\/?\\/?", @"");
+    if (ASRegularExpressionMatches(strippedPath, @"^([a-zA-Z])[\\|:]")) strippedPath = [NSString stringWithFormat:@"/%@", strippedPath];
+    
+    ASURL *parsedURL = [self URLWithString:strippedPath];
+    
+    if (parsedURL.scheme == nil) {
+        // Adjust Windows-style URLs
+        NSError *error;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^\\/?([a-zA-Z])[\\|:][\\\\\\/]" options:0 error:&error];
+        if (regex == nil) [NSException raise:NSInternalInconsistencyException format:@"Could not compile regex: %@", error];
+        
+        NSMutableString *fixedPath = [parsedURL.path mutableCopy];
+        [regex enumerateMatchesInString:parsedURL.path options:0 range:NSMakeRange(0, parsedURL.path.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+            NSRange range = [result rangeAtIndex:1];
+            if (range.location != NSNotFound && range.length != 0) {
+                [fixedPath replaceCharactersInRange:range withString:[[fixedPath substringWithRange:range] lowercaseString]];
+            }
+        }];
+        
+        parsedURL.path = ASRegularExpressionReplace(fixedPath, @"\\\\", @"/");
+        
+        // If the path is absolute, set the scheme and host.
+        if (ASRegularExpressionMatches(parsedURL.path, @"^\\/")) {
+            parsedURL.scheme = @"file";
+            parsedURL.hostName = @"";
+        }
+    }
+    
+    return parsedURL;
+}
+
 - (id)initWithComponents:(NSDictionary *)components {
     if ([components.allKeys containsObject:ASURLComponentAuthority]) {
         if ([components.allKeys containsObject:ASURLComponentUserInfo] ||
