@@ -1,0 +1,20 @@
+PODS:
+  - Addressable (0.1.0)
+  - Expecta (0.3.0)
+  - Specta (0.2.1)
+
+DEPENDENCIES:
+  - Addressable (from `../`)
+  - Expecta
+  - Specta (~> 0.2.1)
+
+EXTERNAL SOURCES:
+  Addressable:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Addressable: bc4629f26f419821578903f383c1f1dfa91ef316
+  Expecta: ce8a51b9fad15a2cd573b291cb2909aaed865350
+  Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
+
+COCOAPODS: 0.33.1
