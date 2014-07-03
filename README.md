@@ -9,6 +9,11 @@ closely conforms to RFC 3986, RFC 3987, and RFC 6570
 (level 4). It also provides support for IRIs and URI
 templates.
 
+**I have stopped maintaining this pod for now, due to the
+high maintenence burden of porting it from Ruby and the
+fact that I can do just as well with the IFUnicodeURL
+pod.**
+
 ## Usage
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
