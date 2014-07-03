@@ -14,6 +14,6 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://github.com/PodBuilder/Addressable.git", :tag => s.version.to_s }
 
   s.source_files = 'Pod/Classes'
-  s.resources = 'Pod/Assets/*.png'
+  s.resources = [ 'Pod/Assets/*.plist' ]
   s.requires_arc = true
 end

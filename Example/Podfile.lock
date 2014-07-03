@@ -13,7 +13,7 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  Addressable: b765e1dcdd090e7fc572dff9ddeeccab817417f4
+  Addressable: 698d081b7dcca01001f0770764b6a70975a13769
   Expecta: ce8a51b9fad15a2cd573b291cb2909aaed865350
   Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
 
